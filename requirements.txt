@@ -1,0 +1,40 @@
+# --- Core ---
+pandas
+numpy
+scikit-learn
+
+# --- Modeling (3+ algorithms for comparison) ---
+xgboost
+lightgbm
+catboost
+
+# --- Hyperparameter tuning ---
+optuna
+
+# --- Explainable AI ---
+shap
+lime
+
+# --- Experiment tracking ---
+mlflow
+
+# --- API ---
+fastapi
+uvicorn[standard]
+pydantic
+
+# --- Dashboard ---
+streamlit
+plotly
+
+# --- EDA / visualization ---
+matplotlib
+seaborn
+
+# --- Utilities ---
+joblib
+python-dotenv
+pyyaml
+
+# --- Testing ---
+pytest

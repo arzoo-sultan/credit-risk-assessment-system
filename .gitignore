@@ -1,0 +1,39 @@
+# Data (never commit raw/processed data — too large, and often sensitive)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Trained model artifacts
+models/*
+!models/.gitkeep
+
+# MLflow tracking
+mlruns/
+mlflow.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+
+# OS
+.DS_Store
+
+# Reports (keep the folder, ignore generated figures if large)
+reports/figures/*.png
+!reports/figures/.gitkeep
+
+# IDE
+.vscode/
+.idea/
