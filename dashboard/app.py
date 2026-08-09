@@ -2,11 +2,12 @@ import streamlit as st
 import requests
 import pandas as pd
 import json
-
+import os
 st.set_page_config(page_title="Credit Risk Dashboard", layout="wide")
 st.title("Credit Risk Assessment Dashboard")
 
-API_URL = "http://127.0.0.1:8000"
+
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 st.header("Applicant Risk Lookup")
 st.write("Paste applicant feature JSON below, or upload a payload file.")
