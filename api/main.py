@@ -1,42 +1,61 @@
-"""
-FastAPI inference service for the Credit Risk Assessment System.
-
-Run locally with:
-    uvicorn api.main:app --reload
-
-Once a trained model exists at models/model.pkl, /predict will load it and
-return a default probability + risk score + top SHAP contributors for the
-given applicant.
-"""
 from fastapi import FastAPI, HTTPException
-from api.schemas import ApplicantFeatures, PredictionResponse
+from pydantic import BaseModel
+from typing import Dict
+import joblib
+import json
+import pandas as pd
 
 app = FastAPI(
     title="Credit Risk Assessment API",
-    description="Predicts default risk and returns an explainable risk score.",
-    version="0.1.0",
+    description="Predicts default risk and returns a credit score for a loan applicant.",
+    version="1.0.0",
 )
+
+model = joblib.load("models/catboost_final_fair.pkl")
+
+with open("models/decision_threshold_final.json") as f:
+    config = json.load(f)
+
+
+class ApplicantFeatures(BaseModel):
+    features: Dict[str, float]
+
+
+def probability_to_score(prob, min_score=300, max_score=850):
+    score = max_score - (prob * (max_score - min_score))
+    return int(max(min_score, min(max_score, score)))
+
+
+def assign_risk_band(prob, low_cutoff=0.3825, high_cutoff=0.6402):
+    if prob < low_cutoff:
+        return "Low"
+    elif prob < high_cutoff:
+        return "Medium"
+    return "High"
 
 
 @app.get("/health")
 def health_check():
-    """Simple liveness check."""
     return {"status": "ok"}
 
 
-@app.post("/predict", response_model=PredictionResponse)
+@app.post("/predict")
 def predict(applicant: ApplicantFeatures):
-    """
-    Predict default probability and risk score for a single applicant.
+    try:
+        X = pd.DataFrame([applicant.features])
+        expected_cols = model.feature_names_
+        X = X.reindex(columns=expected_cols, fill_value=0)
 
-    TODO once model is trained:
-    1. Load the serialized model + preprocessing pipeline from models/
-    2. Transform `applicant` into the model's expected feature vector
-    3. Run model.predict_proba()
-    4. Run SHAP explainer on the single instance
-    5. Return probability, risk_score, and top contributing features
-    """
-    raise HTTPException(
-        status_code=501,
-        detail="Model not yet trained/loaded — this endpoint is a placeholder.",
-    )
+        prob = model.predict_proba(X)[:, 1][0]
+        score = probability_to_score(prob)
+        band = assign_risk_band(prob)
+
+        return {
+            "default_probability": round(float(prob), 4),
+            "risk_band": band,
+            "credit_score": score,
+            "decision_threshold": config["optimal_threshold"],
+            "flagged_high_risk": bool(prob >= config["optimal_threshold"]),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
