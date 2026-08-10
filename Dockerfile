@@ -13,5 +13,9 @@ RUN pip install --no-cache-dir -r requirements-deploy.txt
 COPY api/ ./api/
 COPY dashboard/ ./dashboard/
 COPY models/ ./models/
+COPY api/ ./api/
+COPY dashboard/ ./dashboard/
+COPY models/ ./models/
+COPY reports/ ./reports/
 
 EXPOSE 8000 8501

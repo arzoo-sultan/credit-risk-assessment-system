@@ -34,6 +34,9 @@ def assign_risk_band(prob, low_cutoff=0.3825, high_cutoff=0.6402):
     return "High"
 
 
+@app.get("/")
+def msg():
+    return {"message":"Server Started"}
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
