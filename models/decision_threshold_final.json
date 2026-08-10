@@ -1,0 +1,10 @@
+{
+  "optimal_threshold": 0.7198832270177709,
+  "precision_at_threshold": 0.29607250755287007,
+  "recall_at_threshold": 0.29607250755287007,
+  "features_excluded_for_fairness": [
+    "CODE_GENDER_M",
+    "CODE_GENDER_XNA"
+  ],
+  "auc": 0.760375402945312
+}
